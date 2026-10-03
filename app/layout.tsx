@@ -5,8 +5,8 @@ import "./globals.css";
 const figtree = Figtree({ variable: "--font-figtree", subsets: ["latin"] });
 const newsreader = Newsreader({ variable: "--font-newsreader", subsets: ["latin"], style: ["normal", "italic"] });
 
-const title = "Episode 01 — The Pilot";
-const description = "Selome, aka Star, will you go on a first date with me?";
+const title = "Selome, aka Star, will you go on a simple date with me?";
+const description = "Episode 01 — The Pilot. I picked a few places based on our chats.";
 
 export const metadata: Metadata = {
   title,

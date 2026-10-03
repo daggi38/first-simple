@@ -43,7 +43,7 @@ export function DateInvite() {
         </div>
         <div className="fade-in-late">
           <p className="mx-auto mt-8 max-w-[20ch] font-serif text-2xl leading-snug">
-            Selome, aka Star, will you go on a first date with me?
+            Selome, aka Star, will you go on a simple date with me?
           </p>
           <p className="mt-4 text-muted">I picked a few places based on our chats.</p>
           <p className="mx-auto mt-10 max-w-[30ch] text-muted">
