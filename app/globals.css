@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-paper: #12100d;
+  --color-surface: #1b1814;
+  --color-ink: #ede6da;
+  --color-muted: #9b9184;
+  --color-line: #2f2a23;
+  --color-accent: #d4ad72;
+  --color-accent-soft: #2b2419;
+  --font-sans: var(--font-figtree);
+  --font-serif: var(--font-newsreader);
+}
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-size: 1rem;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Faint film grain over everything */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Page gutter that also clears the notch / rounded corners in landscape */
+.page {
+  --gutter-l: max(1.25rem, env(safe-area-inset-left));
+  --gutter-r: max(1.25rem, env(safe-area-inset-right));
+  padding-inline: var(--gutter-l) var(--gutter-r);
+}
+/* Stretch an element to the screen edges inside .page, keeping the content aligned */
+.bleed {
+  margin-inline: calc(var(--gutter-l) * -1) calc(var(--gutter-r) * -1);
+  padding-inline: var(--gutter-l) var(--gutter-r);
+}
+
+/* Small spaced-out caps used for "Season 01", "Episode 01" etc. */
+.label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* Fixed calendar height: padding + header + weekday row + 6 rows of 48px, so nothing shifts while it loads */
+.calendar {
+  min-height: calc(1rem + 3.5rem + 1.25rem + 18rem + 2px);
+}
+
+.fade-in {
+  animation: fade-in 700ms ease-out both;
+}
+.fade-in-late {
+  animation: fade-in 900ms 250ms ease-out both;
+}
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Gentle bob on the scroll hint arrow */
+.nudge {
+  animation: nudge 2.4s ease-in-out infinite;
+}
+@keyframes nudge {
+  0%, 100% { transform: none; }
+  50% { transform: translateY(3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
