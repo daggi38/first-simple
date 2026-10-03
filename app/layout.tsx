@@ -6,7 +6,7 @@ const figtree = Figtree({ variable: "--font-figtree", subsets: ["latin"] });
 const newsreader = Newsreader({ variable: "--font-newsreader", subsets: ["latin"], style: ["normal", "italic"] });
 
 const title = "Episode 01 — The Pilot";
-const description = "Selome, I want to take you on a proper date.";
+const description = "Selome, aka Star, will you go on a first date with me?";
 
 export const metadata: Metadata = {
   title,
