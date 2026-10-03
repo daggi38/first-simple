@@ -1,5 +1,8 @@
 // Receives her choice. Shows up in your server logs (e.g. Vercel → Logs, search "date-choice").
-// Set NOTIFY_URL to get a push on your phone, e.g. https://ntfy.sh/<your-secret-topic>
+//
+// Notifications (set either or both as environment variables):
+//   Telegram: TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID (see README)
+//   ntfy:     NOTIFY_URL, e.g. https://ntfy.sh/<your-secret-topic>
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -11,17 +14,43 @@ export async function POST(request: Request) {
 
   console.log("[date-choice]", { restaurantId, restaurantName, date, at: new Date().toISOString() });
 
-  const notified = await notify(`She picked ${restaurantName} on ${date}`);
+  const message = `Episode 01 approved: ${restaurantName} on ${date}`;
+  // Awaited before responding, so the serverless function isn't frozen mid-request.
+  const results = await Promise.all([sendTelegram(message), sendNtfy(message)]);
+  const notified = results.some((r) => r === true);
+  if (results.every((r) => r === null)) {
+    console.warn("[date-choice] No notification channel is configured for this deployment");
+  }
+
   return Response.json({ ok: true, notified });
 }
 
-// Awaited before responding, so the serverless function isn't frozen mid-request.
-async function notify(message: string): Promise<boolean> {
-  const url = process.env.NOTIFY_URL?.trim();
-  if (!url) {
-    console.warn("[date-choice] NOTIFY_URL is not set for this deployment; no push sent");
+// Each sender returns true (sent), false (failed) or null (not configured).
+
+async function sendTelegram(text: string): Promise<boolean | null> {
+  const token = process.env.TELEGRAM_BOT_TOKEN?.trim();
+  const chatId = process.env.TELEGRAM_CHAT_ID?.trim();
+  if (!token || !chatId) return null;
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text }),
+      signal: AbortSignal.timeout(8000),
+    });
+    const data = await res.json().catch(() => null);
+    console.log("[date-choice] telegram responded", res.status, data?.ok ? "" : (data?.description ?? ""));
+    return res.ok && data?.ok === true;
+  } catch (err) {
+    console.error("[date-choice] telegram request failed", err);
     return false;
   }
+}
+
+async function sendNtfy(message: string): Promise<boolean | null> {
+  const url = process.env.NOTIFY_URL?.trim();
+  if (!url) return null;
 
   try {
     const res = await fetch(url, {
